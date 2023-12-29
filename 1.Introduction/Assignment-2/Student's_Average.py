@@ -8,3 +8,4 @@ for i in range(3):
     grades.append(grade)
 
 average_grade = sum(grades) / len(grades)
+print(average_grade)
