@@ -1,5 +1,7 @@
+import gtts
 
-Database_File = "1.Introduction/Assignment-8/translate.txt"
+Database_File = "1.Introduction/Assignment-8/Translate/translate.txt"
+
 def read_from_file():
     try:
         global words_bank
@@ -18,11 +20,13 @@ def read_from_file():
         print("File not existed!")
 
 def write_to_database():
-    with open(Database_File, "w") as file:
-        for word in words_bank:
-            file.write(word["en"]+"\n")
-            file.write(word["fa"]+"\n")
-
+    try:
+        with open(Database_File, "w") as file:
+            for word in words_bank:
+                file.write(word["en"] + "\n")
+                file.write(word["fa"] + "\n")
+    except:
+        print("An Error occured!")
 
 def translate_english_to_farsi():
     user_text = input("Enter your english text: ")
@@ -34,7 +38,9 @@ def translate_english_to_farsi():
                 break
         else:
             print(user_word, end =" ")
-
+    tts = gtts.gTTS(user_text, lang="en")
+    tts.save(f"1.Introduction/Assignment-8/Translate/voice/{user_text}.mp3")
+    
 def translate_farsi_to_english():
     user_text = input("Enter your farsi text: ")
     user_words = user_text.split(" ")
@@ -45,6 +51,8 @@ def translate_farsi_to_english():
                 break
         else:
             print(user_word, end =" ")
+    tts = gtts.gTTS(user_text, lang="en")
+    tts.save(f"1.Introduction/Assignment-8/Translate/voice/{user_text}.mp3")
 
 def add_new_word_to_database():
     english = input("Enter English word: ")
@@ -53,7 +61,6 @@ def add_new_word_to_database():
     words_bank.append(new_word)
     print("Dictionary updated successfully!")
 
-
 def show_menu():
     print("\n\n1- Translate English to Farsi.")
     print("2- Translate Farsi to English.")
@@ -61,7 +68,6 @@ def show_menu():
     print("4- Exit")
 
 def choice():
-    global words_bank
     choice = int(input("enter your choice: "))
     if choice == 1:
         translate_english_to_farsi()
@@ -76,6 +82,7 @@ def choice():
 
 if __name__ == "__main__":
     read_from_file()
+    global words_bank
     while True:
         show_menu()
         choice()
