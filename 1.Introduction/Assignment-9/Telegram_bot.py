@@ -23,7 +23,31 @@ def send_welcome(message):
 
 @bot.message_handler(commands=["help"])
 def give_info(message):
-    pass
+    user_id = message.from_user.id
+    help_message = (
+        "راهنما:\n"
+        "/start - شروع چت با ربات\n"
+        "/QRCode - تولید کد QR از یک رشته\n"
+        "/age - محاسبه سن به صورت هجری شمسی\n"
+        "/voice - تبدیل یک متن به صدا\n"
+        "/max - یافتن بزرگترین عدد در یک آرایه\n"
+        "/argmax - یافتن اندیس بزرگترین عدد در یک آرایه\n"
+        "/game - بازی حدس عدد"
+    )
+
+    bot.send_message(user_id, help_message)
+
+    markup = types.ReplyKeyboardMarkup(row_width=2)
+    start_btn = types.KeyboardButton("/start")
+    qrcode_btn = types.KeyboardButton("/QRCode")
+    age_btn = types.KeyboardButton("/age")
+    voice_btn = types.KeyboardButton("/voice")
+    max_btn = types.KeyboardButton("/max")
+    argmax_btn = types.KeyboardButton("/argmax")
+    game_btn = types.KeyboardButton("/game")
+    markup.add(start_btn, qrcode_btn, age_btn, voice_btn, max_btn, argmax_btn, game_btn)
+
+    bot.send_message(user_id, help_message, reply_markup=markup)
 
 # QRCode یک رشته از کاربر دریافت نماید و qrcode آن را تولید نماید.
 
@@ -115,5 +139,43 @@ def return_argmax(message):
     argmax_value = max(range(len(numbers)), key=lambda i: numbers[i])
     user_id = message.from_user.id
     bot.send_message(user_id, f"بزرگترین مقدار در اندیس : {argmax_value}")
+
+# game بازی حدس عدد اجرا شود. کاربر یک عدد حدس میزند و بات راهنمایی می‌کند (برو بالا، برو پایین، برنده شدی) - در هنگام بازی، یک دکمه new game در پایین بات مشاهده شود.
+
+@bot.message_handler(commands=["game"])
+def start_game(message):
+    user_id = message.from_user.id
+    global target_number, attempts, user_guess
+    target_number = random.randint(1, 100)
+    attempts = 0
+    user_guess = 0
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    markup.add(types.KeyboardButton("برو بالا"))
+    markup.add(types.KeyboardButton("برو پایین"))
+    markup.add(types.KeyboardButton("برنده شدی"))
+    bot.send_message(user_id, f"بازی حدس عدد شروع شد! عددی بین 1 تا 100 را حدس بزنید.", reply_markup=markup)
+@bot.message_handler(func=lambda message: message.text in ["برو بالا", "برو پایین", "برنده شدی"])
+def check_guess(message):
+    global target_number, attempts, user_guess
+    user_id = message.from_user.id
+    user_guess = 0
+    try:
+        if message.text == "برو بالا" :
+            user_guess = random.randint(user_guess + 1, 100)
+        elif message.text == "برو پایین":
+            user_guess =  random.randint(1, user_guess - 1)
+        else:
+            bot.send_message(user_id, f"تبریک! شما با {attempts} تلاش برنده شدید.")
+            return
+    except Exception as e:
+        bot.send_message(user_id, "متاسفانه خطایی رخ داده است. لطفاً دوباره تلاش کنید.")
+        return
+    attempts += 1
+    bot.send_message(user_id, f"آیا عدد حدس زده شده توسط بات برابر با {user_guess} است؟", reply_markup= types.ReplyKeyboardRemove())
+@bot.message_handler(func = lambda message: message.text.lower() == "new game")
+def new_game(message):
+    user_id = message.from_user.id
+    bot.send_message(user_id, "بازی جدید شروع شد! عدد جدیدی بین 1 تا 100 را حدس بزنید.")
+    start_game(message)
 
 bot.infinity_polling()
