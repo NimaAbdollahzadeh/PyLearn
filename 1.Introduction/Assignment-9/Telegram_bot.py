@@ -9,7 +9,7 @@ import jdatetime
 import qrcode
 
 
-bot = telebot.TeleBot("6487625609:AAFEk4UqXVR1yg0FC59CEA1K9srDY_CFV84", parse_mode=None)
+bot = telebot.TeleBot(#TOKEN_plecement, parse_mode=None)
 
 # Welcome message با نام کاربر، خوش آمدید چاپ کند. مثلا (sajjad خوش آمدی) 
 
