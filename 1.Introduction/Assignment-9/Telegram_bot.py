@@ -58,20 +58,31 @@ def get_string(message):
     bot.send_message(user_id, "لطفا یک رشته را وارد کنید: ", reply_markup= markup)
 @bot.message_handler(func=lambda message: True, content_types=["text"])
 def make_QRCode(message):
-    qr = qrcode.QRCode(
-        version = 1,
-        error_correction = qrcode.constants.ERROR_CORRECT_L,
-        box_size = 10,
-        border = 4,
-)
-    qr.add_data(message)
-    qr.make(fit=True)
-    img = qr.make_image(fill_color="black", back_color="white")
-    img_path = ("1.Introduction/Assignment-9/database/qrcode/qrcode.png")
-    img.save(img_path)
-    user_id = message.from_user.id
-    with open(img_path, "rb") as photo:
-        bot.send_photo(user_id, photo)
+    try:
+        user_input = message.text
+        qr = qrcode.QRCode(
+            version=1,  # Set a valid version (1 to 40)
+            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            box_size=10,
+            border=4,
+        )
+        qr.add_data(user_input)
+        qr.make(fit=True)
+        img = qr.make_image(fill_color="black", back_color="white")
+        
+        # Save the image to a file
+        img_path = "path/to/save/qrcode.png"
+        img.save(img_path)
+
+        user_id = message.from_user.id
+        with open(img_path, "rb") as photo:
+            bot.send_photo(user_id, photo)
+
+    except Exception as e:
+        # Handle exceptions appropriately
+        print(f"Error generating QR code: {e}")
+        user_id = message.from_user.id
+        bot.send_message(user_id, "An error occurred while generating the QR code.")
 
     
 # Age Calculator تاریخ تولد را به صورت هجری شمسی دریافت نماید و سن را محاسبه نماید. (برای راهنمایی به آدرس اینستاگرامی pylearn@ مراجعه نمایید)
