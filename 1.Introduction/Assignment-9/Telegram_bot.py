@@ -61,7 +61,7 @@ def make_QRCode(message):
     try:
         user_input = message.text
         qr = qrcode.QRCode(
-            version=1,  # Set a valid version (1 to 40)
+            version=1, 
             error_correction=qrcode.constants.ERROR_CORRECT_L,
             box_size=10,
             border=4,
@@ -69,8 +69,7 @@ def make_QRCode(message):
         qr.add_data(user_input)
         qr.make(fit=True)
         img = qr.make_image(fill_color="black", back_color="white")
-        
-        # Save the image to a file
+   
         img_path = "path/to/save/qrcode.png"
         img.save(img_path)
 
@@ -79,7 +78,6 @@ def make_QRCode(message):
             bot.send_photo(user_id, photo)
 
     except Exception as e:
-        # Handle exceptions appropriately
         print(f"Error generating QR code: {e}")
         user_id = message.from_user.id
         bot.send_message(user_id, "An error occurred while generating the QR code.")
